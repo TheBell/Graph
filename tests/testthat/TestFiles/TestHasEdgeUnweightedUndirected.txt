@@ -1,0 +1,23 @@
+* Graphs test file by B. Bell
+* File TestHasEdgeUnweightedUndirected.txt
+* This file checks the addEdge and hasEdge method for unweighted and undirected,
+* including non-existent nodes and self-loops.
+unweighted
+undirected
+begin
+A B C D
+A B
+A C
+A D
+B C
+end
+hasEdge A B
+true
+hasEdge B C
+true
+hasEdge B D
+false
+hasEdge C E
+false
+hasEdge E F
+false

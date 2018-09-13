@@ -11,14 +11,13 @@ files <- list.files(path=".", pattern = ".txt")
 runTestFile <- function(file) {
 
   con <- file(file, "r")
+  on.exit(close(con))
 
   testGraph <- buildGraph(con)
-
   testGraph <- addEdges(con, testGraph)
 
   # Run Tests
   while (TRUE) {
-
     lines <- readLines(con, n = 2)
 
     if (length(lines) <= 1) break  # EOF
@@ -29,12 +28,11 @@ runTestFile <- function(file) {
 
     if (result == "true") result <- TRUE
     if (result == "false") result <-  FALSE
-    print("Running Test")
+
     testGraph <- runTest(testGraph, fun[1], result, fun[-1])
   }
 
-
-  on.exit(close(con))
+  # on.exit(close(con))
   return(TRUE)
 }
 

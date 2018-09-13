@@ -8,7 +8,7 @@
 #' @param useAdjMatrix TRUE if an adjacency matrix is used internally or FALSE to use a list
 #' @return A graph object
 graph <- function(nodes, weighted = FALSE, directed = FALSE, useAdjMatrix = TRUE) {
-  if (useAdjMatrix) return(graph(nodes, weighted, directed))
+  if (useAdjMatrix) return(adjMatrixGraph(nodes, weighted, directed))
   return(adjListGraph(nodes, weighted, directed))
 }
 
@@ -19,7 +19,7 @@ graph <- function(nodes, weighted = FALSE, directed = FALSE, useAdjMatrix = TRUE
 #' @param weighted TRUE if the graph  is weighted or FALSE. Defaults to FALSE.
 #' @param directed TRUE if graph is directed. Defaults to FALSE.
 #' @return A graph object
-adjMatrixgraph <- function(nodes, weighted = FALSE, directed = FALSE) {
+adjMatrixGraph <- function(nodes, weighted = FALSE, directed = FALSE) {
   graphObj <- list(weighted = weighted,
                   directed = directed,
                   nodes = c())
@@ -53,7 +53,7 @@ adjListGraph <- function(nodes, weighted = FALSE, directed = FALSE) {
 }
 
 hasEdge <- function(obj, ...) UseMethod("hasEdge")
-hasEdge.default <- function(obj, ...) paste("Method for class not found:", class(obj))
+hasEdge.default <- function(obj, ...) print(paste("Method for class not found:", class(obj)))
 
 #' A Graph Function
 #'
@@ -69,7 +69,7 @@ hasEdge.adjMatrixGraph <- function(graph, node1, node2) {
 }
 
 addEdge <- function(obj, ...) UseMethod("addEdge")
-addEdge.default <- function(obj, ...) paste("Method for class not found:", class(obj))
+addEdge.default <- function(obj, ...) print(paste("Method for class not found:", class(obj)))
 
 #' A Graph Function
 #'
@@ -95,7 +95,7 @@ addEdge.adjMatrixGraph <- function(graph, node1, node2, weight = 1) {
 }
 
 deleteEdge <- function(obj, ...) UseMethod("deleteEdge")
-deleteEdge.default <- function(obj, ...) paste("Method for class not found:", class(obj))
+deleteEdge.default <- function(obj, ...) print(paste("Method for class not found:", class(obj)))
 
 #' A Graph Function
 #'

@@ -1,0 +1,20 @@
+* Graphs test file by B. Bell
+* File TestDeleteEdgeUndirected.txt
+* This file checks that deleteEdge works
+unweighted
+undirected
+begin
+A B C D
+A B
+A C
+A D
+B C
+end
+hasEdge A B
+true
+deleteEdge A B
+true
+hasEdge A B
+false
+deleteEdge C D
+false

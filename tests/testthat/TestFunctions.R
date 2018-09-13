@@ -63,7 +63,7 @@ runTest <- function(graphObj, methodStr, expected, args) {
 
   fun <- get(methodStr)  # Get the function to call
 
-  result <- do.call(fun, c(list(graphObj),args))
+  result <- do.call(fun, c(list(graphObj), args))
   expect_equal(result[[2]], expected)
-  return(result[[1]])
+  return(result[[1]])  # Return the graph
 }

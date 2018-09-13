@@ -1,3 +1,6 @@
+# TODO: Remove possibility of loopsbacks and test
+# TODO: Test isSparse and isDense
+
 
 #' A Graph Function
 #'
@@ -32,7 +35,7 @@ adjMatrixGraph <- function(nodes, weighted = FALSE, directed = FALSE) {
 
   names(graphObj$nodes) <- nodes
 
-  graphObj$edges <- matrix(-1, nrow = length(graphObj$nodes), ncol = length(graphObj$nodes),
+  graphObj$edges <- matrix(0, nrow = length(graphObj$nodes), ncol = length(graphObj$nodes),
                            dimnames = list(names(graphObj$nodes), names(graphObj$nodes)))
 
   class(graphObj) <- c("adjMatrixGraph", "graph")
@@ -64,7 +67,7 @@ hasEdge.default <- function(obj, ...) print(paste("Method for class not found:",
 hasEdge.adjMatrixGraph <- function(graph, node1, node2) {
   r <- list(graph = graph, result = NULL)
   if (!node1 %in% graph$nodes | !node2 %in% graph$nodes) r$result <- FALSE
-  else r$result <- graph$edges[node1, node2] != -1
+  else r$result <- graph$edges[node1, node2] != 0
   return(r)
 }
 
@@ -78,7 +81,7 @@ addEdge.default <- function(obj, ...) print(paste("Method for class not found:",
 #' @param node1 The first node
 #' @param node2 The second node
 #' @param weight Defaults to 1 (used for non-weighted graph)
-#' @return the new graph with the added edge and a boolean indicating whether the operation was successful
+#' @return the new graph with the added edge and whether the operation was successful
 addEdge.adjMatrixGraph <- function(graph, node1, node2, weight = 1) {
   r <- list(graph = graph, result = TRUE)
 
@@ -105,6 +108,119 @@ deleteEdge.default <- function(obj, ...) print(paste("Method for class not found
 #' @param node2 The second node
 #' @return a list containing the new graph and whether an operation was performed
 deleteEdge.adjMatrixGraph <- function(graph, node1, node2) {
-  r <- list(graph = obj, result = FALSE)
-  return(FALSE)
+  r <- list(graph = graph, result = TRUE)
+  
+  if (!node1 %in% graph$nodes | !node2 %in% graph$nodes) {
+    r$result <- FALSE
+    return(r)
+  }
+  
+  if (graph$edges[node1, node2] == 0) {
+    r$result <- FALSE
+    return(r)
+  }
+  
+  graph$edges[node1, node2] <- 0
+  
+  if (!graph$directed) {
+    graph$edges[node2, node1] <- 0
+  }
+  
+  r$graph <- graph
+  
+  return(r)
+}
+
+addVertex <- function(obj, ...) UseMethod("addVertex")
+addVertex.default <- function(obj, ...) print(paste("Method for class not found:", class(obj)))
+
+#' A Graph Function
+#' 
+#' This function adds a vertex.
+#' @param graph the graph obj
+#' @param vertex the new vertex to add
+#' @return a list containing the new graph and whether an operation was performed
+addVertex.adjMatrixGraph <- function(graph, vertex) {
+  r <- list(graph = graph, result = TRUE)
+  
+  if (vertex %in% graph$nodes) {
+    r$result <-  FALSE
+    return(r)
+  }
+  
+  # Update list of nodes
+  graph$nodes <- c(graph$nodes, vertex)
+  names(graph$nodes)[length(graph$nodes)] <- vertex
+  
+  # Update matrix
+  graph$edges <- rbind(cbind(graph$edges, 0), 0)  # add new row and col to matrix
+  rownames(graph$edges) <- names(graph$nodes)
+  colnames(graph$edges) <- rownames(graph$edges)
+  
+  r$graph = graph
+  
+  return(r)
+}
+
+deleteVertex <- function(obj, ...) UseMethod("deleteVertex")
+deleteVertex.default <- function(obj, ...) print(paste("Method for class not found:", class(obj)))
+
+#' A Graph Function
+#' 
+#' This function deletes a vertex.
+#' @param graph the graph obj
+#' @param vertex the vertex to delete
+#' @return a list containing the new graph and whether an operation was performed
+deleteVertex.adjMatrixGraph <- function(graph, vertex) {
+  r <- list(graph = graph, result = TRUE)
+  
+  if (!vertex %in% graph$nodes) {
+    r$result <- FALSE
+    return(r)
+  }
+  
+  index <- which(graph$nodes == vertex)
+  
+  graph$nodes <- graph$nodes[-index]
+  graph$edges <- graph$edges[-index, -index]
+  
+  r$graph <- graph
+  
+  return(r)
+}
+
+isSparse <- function(obj, ...) UseMethod("isSparse")
+isSparse.default <- function(obj, ...) print(paste("Method for class not found:", class(obj)))
+
+#' A Graph Function
+#' 
+#' This functions checks if the graph is sparse.
+#' @param graph the graph obj
+#' @param level the cutoff level for a sparse graph, defaul is .15
+#' @return a list containing the graph and whether the graph is sparse
+isSparse.adjMatrixGraph <- function(graph, level = .15) {
+  
+  cutoff <- .15 * (length(graph$nodes)  ^ 2 - length(graph$nodes)) # Since no loop-back is allowed, subtract those possibilites
+  
+  edges <- sum(graph$edges > 0)
+  
+  return(list(graph = graph, result = edges < cutoff)
+}
+
+isDense <- function(obj, ...) UseMethod("isDense")
+isDense.default <- function(obj, ...) print(paste("Method for class not found:", class(obj)))
+
+#' A Graph Function
+#' 
+#' This functions checks if the graph is dense.
+#' @param graph the graph obj
+#' @param level the cutoff level for a dense graph, defaul is .85
+#' @return a list containing the graph and whether the graph is dense
+isSparse.adjMatrixGraph <- function(graph, level = .15) {
+  
+  cutoff <- .85 * (length(graph$nodes)  ^ 2 - length(graph$nodes)) # Since no loop-back is allowed, subtract those possibilites
+  
+  edges <- sum(graph$edges > 0)
+  
+  return(list(graph = graph, result = edges > cutoff) 
 }

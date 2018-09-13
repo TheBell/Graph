@@ -1,0 +1,19 @@
+* Graphs test file by B. Bell
+* File TestAddDeleteVertex.txt
+* This file checks that addVertex and deleteVertex work
+unweighted
+undirected
+begin
+C D 
+C D
+end
+addVertex A
+true
+addVertex A
+false
+addVertex B
+true
+deleteVertex B
+true
+deleteVertex B
+false

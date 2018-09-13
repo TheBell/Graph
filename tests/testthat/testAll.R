@@ -3,6 +3,7 @@ library(Graph)
 
 pathToGraph <- "C:/Programming/Algorithms/Graph"
 
+# Load in utility test functions
 source(paste(pathToGraph, "/tests/testthat/TestFunctions.R", sep=""))
 
 setwd(paste(pathToGraph, "/tests/testthat/TestFiles", sep = ""))
@@ -36,6 +37,6 @@ runTestFile <- function(file) {
   return(TRUE)
 }
 
-runTestFile(files[1])
+# runTestFile(files[1])
 
 sapply(files, FUN = runTestFile)

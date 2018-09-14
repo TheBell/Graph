@@ -1,0 +1,13 @@
+* Graphs test file by B. Bell
+* File TestCountVertices.txt
+* This file checks that addVertex and deleteVertex work
+unweighted
+A B C D
+A B
+undirected
+begin
+countVertices
+4
+deleteVertex D
+countVertices
+3

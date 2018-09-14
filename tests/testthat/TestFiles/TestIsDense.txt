@@ -1,0 +1,17 @@
+* Graphs test file by B. Bell
+* File TestIsDense.txt
+* This file checks that addVertex and deleteVertex work
+unweighted
+undirected
+begin
+A B C
+A B
+end
+isDense
+false
+addEdge B C
+true
+addEdge C A
+true
+isDense
+true

@@ -1,0 +1,17 @@
+* Graphs test file by B. Bell
+* File TestIsSparse.txt
+* This file checks that addVertex and deleteVertex work
+unweighted
+undirected
+begin
+A B C D E
+A B
+end
+isSparse
+true
+addEdge B C
+true
+addEdge C D
+true
+isSparse
+false

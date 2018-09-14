@@ -202,9 +202,13 @@ isSparse.adjMatrixGraph <- function(graph, level = .15) {
   
   cutoff <- .15 * (length(graph$nodes)  ^ 2 - length(graph$nodes)) # Since no loop-back is allowed, subtract those possibilites
   
+  if (graph$directed) {
+    cutoff <- cutoff / 2
+  }
+  
   edges <- sum(graph$edges > 0)
   
-  return(list(graph = graph, result = edges < cutoff)
+  return(list(graph = graph, result = edges < cutoff))
 }
 
 isDense <- function(obj, ...) UseMethod("isDense")
@@ -216,11 +220,47 @@ isDense.default <- function(obj, ...) print(paste("Method for class not found:",
 #' @param graph the graph obj
 #' @param level the cutoff level for a dense graph, defaul is .85
 #' @return a list containing the graph and whether the graph is dense
-isSparse.adjMatrixGraph <- function(graph, level = .15) {
+isDense.adjMatrixGraph <- function(graph, level = .15) {
   
   cutoff <- .85 * (length(graph$nodes)  ^ 2 - length(graph$nodes)) # Since no loop-back is allowed, subtract those possibilites
   
+  if (graph$directed) {
+    cutoff <- cutoff * 2
+  }
+  
   edges <- sum(graph$edges > 0)
   
-  return(list(graph = graph, result = edges > cutoff) 
+  return(list(graph = graph, result = edges > cutoff)) 
 }
+
+countVertices <- function(obj, ...) UseMethod("countVertices")
+countVertices.default <- function(obj, ...) print(paste("Method for class not found:", class(obj)))
+
+#' A Graph Function
+#' 
+#' This functions counts the vertices.
+#' @param graph the graph obj
+#' @return a list containing the graph and the number of vertices
+
+countEdges <- function(obj, ...) UseMethod("countEdges")
+countEdges.default <- function(obj, ...) print(paste("Method for class not found:", class(obj)))
+
+countEdges.graph <- function(graph) {
+  return(list(graph = graph, result = length(graph$nodes)))
+}
+
+#' A Graph Function
+#' 
+#' This functions counts the edges.
+#' @param graph the graph obj
+#' @return a list containing the graph and the number of edges
+countEdges.adjMatrixGraph <- function(graph) {
+  
+}
+
+isConnected <- function(obj, ...) UseMethod("isConnected")
+isConnected.default <- function(obj, ...) print(paste("Method for class not found:", class(obj)))
+
+isFullyConnected <- function(obj, ...) UseMethod("isFullyConnected")
+isFullyConnected.default <- function(obj, ...) print(paste("Method for class not found:", class(obj)))
+

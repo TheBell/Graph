@@ -29,7 +29,6 @@ runTestFile <- function(file) {
 
     if (result == "true") result <- TRUE
     if (result == "false") result <-  FALSE
-
     testGraph <- runTest(testGraph, fun[1], result, fun[-1])
   }
 
@@ -37,6 +36,6 @@ runTestFile <- function(file) {
   return(TRUE)
 }
 
-# runTestFile(files[1])
+# runTestFile(files[2])
 
 sapply(files, FUN = runTestFile)

@@ -1,6 +1,5 @@
 # TODO: Remove possibility of loopsbacks and test
-# TODO: Test isSparse and isDense
-
+# TODO: Figure out why count vertices test works no matter what
 
 #' A Graph Function
 #'
@@ -241,13 +240,12 @@ countVertices.default <- function(obj, ...) print(paste("Method for class not fo
 #' This functions counts the vertices.
 #' @param graph the graph obj
 #' @return a list containing the graph and the number of vertices
+countVertices.graph <- function(graph) {
+  return(list(graph = graph, result = length(graph$nodes)))
+}
 
 countEdges <- function(obj, ...) UseMethod("countEdges")
 countEdges.default <- function(obj, ...) print(paste("Method for class not found:", class(obj)))
-
-countEdges.graph <- function(graph) {
-  return(list(graph = graph, result = length(graph$nodes)))
-}
 
 #' A Graph Function
 #' 
@@ -255,12 +253,60 @@ countEdges.graph <- function(graph) {
 #' @param graph the graph obj
 #' @return a list containing the graph and the number of edges
 countEdges.adjMatrixGraph <- function(graph) {
-  
+  return(list(graph = graph, result = sum(graph$edges > 0)))
 }
+
 
 isConnected <- function(obj, ...) UseMethod("isConnected")
 isConnected.default <- function(obj, ...) print(paste("Method for class not found:", class(obj)))
 
+#' A Graph Function
+#' 
+#' This functions checks if the graph is connected.
+#' @param graph the graph obj
+#' @ return a list containing the graph and whether the graph is connected
+isConnected.adjMatrixGraph <- function(graph) {
+  
+  r <- list(graph = graph, result = TRUE)
+  
+  visited <- c(graph$nodes[1])
+  currentIndex <- 1
+  neighbors <- c()
+  hasNeighbors <- TRUE
+  
+  while (hasNeighbors == TRUE) {
+    row <- graph$edges[currentIndex,]
+    for (i in 1:length(row)){
+      if (i != 0) {
+        neighbors <- c(neighbors, i)
+      }
+    }
+  }
+  
+}
+
 isFullyConnected <- function(obj, ...) UseMethod("isFullyConnected")
 isFullyConnected.default <- function(obj, ...) print(paste("Method for class not found:", class(obj)))
+
+#' A Graph Function
+#' 
+#' This functions checks if the graph is fully connected.
+#' @param graph the graph obj
+#' @ return a list containing the graph and whether the graph is fully connected
+isFullyConnected.adjMatrixGraph <- function(graph) {
+  r <- list(graph = graph, result = TRUE)
+  
+  for (i in 1:length(graph$nodes)) {
+    for (j in 1:length(graph$nodes)) {
+      if (i != j) {
+        if (graph$edges[i, j] == 0) {
+          r$result <- FALSE
+          return(r)
+        }
+      }
+    }
+  }
+  
+  return(r)
+}
 

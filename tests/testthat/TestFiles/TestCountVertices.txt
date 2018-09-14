@@ -2,9 +2,9 @@
 * File TestCountVertices.txt
 * This file checks that addVertex and deleteVertex work
 unweighted
+undirected
 A B C D
 A B
-undirected
 begin
 countVertices
 4

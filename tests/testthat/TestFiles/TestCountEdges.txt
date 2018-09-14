@@ -1,0 +1,18 @@
+* Graphs test file by B. Bell
+* File TestCountEdges.txt
+* This file checks that countEdges works
+unweighted
+undirected
+A B C D
+A B
+B C
+begin
+countEdges
+2
+deleteEdge B C
+true
+countEdges
+1
+deleteEdge A B
+countEdges
+0

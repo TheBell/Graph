@@ -26,7 +26,7 @@ buildGraph <- function(con) {
   # Get Nodes
   line <- readLines(con, n = 1)
   nodes <- unlist(strsplit(line, split = " "))
-  return(graph(nodes, weighted = weighted, directed = directed))
+  return(graph(nodes, weighted = weighted, directed = directed, useAdjMatrix = FALSE))
 }
 
 #' A function to add edges from test file into graph
@@ -62,7 +62,7 @@ addEdges <- function(con, graph) {
 runTest <- function(graphObj, methodStr, expected, args) {
 
   fun <- get(methodStr)  # Get the function to call
-
+  print(fun)
   result <- do.call(fun, c(list(graphObj), args))
   expect_equal(result[[2]], expected)
   return(result[[1]])  # Return the graph

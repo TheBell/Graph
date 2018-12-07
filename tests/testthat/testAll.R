@@ -36,6 +36,9 @@ runTestFile <- function(file) {
   return(TRUE)
 }
 
-# runTestFile(files[2])
+runTestFile(files[1])
+runTestFile(files[4])
 
-sapply(files, FUN = runTestFile)
+
+
+#sapply(files, FUN = runTestFile)

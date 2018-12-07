@@ -9,6 +9,9 @@
 \arguments{
 \item{graph}{the graph obj}
 }
+\value{
+a list containing the graph and whether the graph is connected
+}
 \description{
 This functions checks if the graph is connected.
 }

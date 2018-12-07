@@ -1,0 +1,13 @@
+* Graphs test file by B. Bell
+* File TestIsConnected.txt
+* This file checks that isConnected works
+unweighted
+undirected
+begin
+A B C
+A B
+end
+addEdge B C
+true
+isConnected
+true

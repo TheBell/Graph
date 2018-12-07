@@ -9,12 +9,12 @@ source(paste(pathToGraph, "/tests/testthat/TestFunctions.R", sep=""))
 setwd(paste(pathToGraph, "/tests/testthat/TestFiles", sep = ""))
 files <- list.files(path=".", pattern = ".txt")
 
-runTestFile <- function(file) {
+runTestFile <- function(file, useAdjMatrix = TRUE) {
 
   con <- file(file, "r")
   on.exit(close(con))
 
-  testGraph <- buildGraph(con)
+  testGraph <- buildGraph(con, useAdjMatrix)
   testGraph <- addEdges(con, testGraph)
 
   # Run Tests
@@ -36,9 +36,7 @@ runTestFile <- function(file) {
   return(TRUE)
 }
 
-runTestFile(files[1])
-runTestFile(files[4])
 
-
-
-#sapply(files, FUN = runTestFile)
+#runTestFile(files[4])
+sapply(files, FUN = runTestFile, useAdjMatrix = FALSE)
+sapply(files, FUN = runTestFile)

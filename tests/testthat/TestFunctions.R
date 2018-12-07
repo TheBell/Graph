@@ -3,8 +3,9 @@
 #' A function to parse the header of a graph
 #'
 #' @param con A connection to a test file
+#' @param useAdjMatrix TRUE if implementing graph is adj matrix
 #' @return a graph object with base attributes set
-buildGraph <- function(con) {
+buildGraph <- function(con, useAdjMatrix = TRUE) {
   weighted <- FALSE
   directed <- FALSE
 
@@ -26,7 +27,7 @@ buildGraph <- function(con) {
   # Get Nodes
   line <- readLines(con, n = 1)
   nodes <- unlist(strsplit(line, split = " "))
-  return(graph(nodes, weighted = weighted, directed = directed, useAdjMatrix = FALSE))
+  return(graph(nodes, weighted = weighted, directed = directed, useAdjMatrix))
 }
 
 #' A function to add edges from test file into graph
@@ -62,8 +63,12 @@ addEdges <- function(con, graph) {
 runTest <- function(graphObj, methodStr, expected, args) {
 
   fun <- get(methodStr)  # Get the function to call
-  print(fun)
+  # print(fun)
   result <- do.call(fun, c(list(graphObj), args))
+  if (result[[2]] != expected) {
+    print(paste("Function:", methodStr, "failed."))
+    print(paste("Expected:", expected, "Result:", result[[2]]))
+  }
   expect_equal(result[[2]], expected)
   return(result[[1]])  # Return the graph
 }

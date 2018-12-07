@@ -231,7 +231,7 @@ deleteEdge.adjListGraph <- function(graph, node1, node2) {
 
   for (i in 2:length(edges)) {
     if (edges[[i]][1] == node2 & edges[[i]][2] != 0) {
-      graph$edges[[node1]] <- graph$edges[[node1[-i]]]
+      graph$edges[[node1]] <- graph$edges[[node1]][-i]
     }
   }
 
@@ -240,11 +240,12 @@ deleteEdge.adjListGraph <- function(graph, node1, node2) {
 
     for (i in 2:length(edges)) {
       if (edges[[i]][1] == node1 & edges[[i]][2] != 0) {
-        graph$edges[[node2]] <- graph$edges[[node2[-i]]]
+        graph$edges[[node2]] <- graph$edges[[node2]][-i]
       }
     }
   }
-
+  r$graph <- graph
+  return(r)
 }
 
 addVertex <- function(obj, ...) UseMethod("addVertex")
@@ -384,6 +385,25 @@ isSparse.adjMatrixGraph <- function(graph, level = .15) {
   return(list(graph = graph, result = edges < cutoff))
 }
 
+#' A Graph Function
+#'
+#' This functions checks if the graph is sparse.
+#' @param graph the graph obj
+#' @param level the cutoff level for a sparse graph, defaul is .15
+#' @return a list containing the graph and whether the graph is sparse
+isSparse.adjListGraph <- function(graph, level = .15) {
+
+  cutoff <- .15 * (length(graph$nodes)  ^ 2 - length(graph$nodes)) # Since no loop-back is allowed, subtract those possibilites
+
+  if (graph$directed) {
+    cutoff <- cutoff / 2
+  }
+
+  edges <- countEdges(graph)$result
+
+  return(list(graph = graph, result = edges < cutoff))
+}
+
 isDense <- function(obj, ...) UseMethod("isDense")
 isDense.default <- function(obj, ...) print(paste("Method for class not found:", class(obj)))
 
@@ -402,6 +422,25 @@ isDense.adjMatrixGraph <- function(graph, level = .15) {
   }
 
   edges <- sum(graph$edges > 0)
+
+  return(list(graph = graph, result = edges > cutoff))
+}
+
+#' A Graph Function
+#'
+#' This functions checks if the graph is dense.
+#' @param graph the graph obj
+#' @param level the cutoff level for a dense graph, defaul is .85
+#' @return a list containing the graph and whether the graph is dense
+isDense.adjListGraph <- function(graph, level = .15) {
+
+  cutoff <- .85 * (length(graph$nodes)  ^ 2 - length(graph$nodes)) # Since no loop-back is allowed, subtract those possibilites
+
+  if (graph$directed) {
+    cutoff <- cutoff * 2
+  }
+
+  edges <- countEdges(graph)$result
 
   return(list(graph = graph, result = edges > cutoff))
 }
@@ -430,6 +469,27 @@ countEdges.adjMatrixGraph <- function(graph) {
   return(list(graph = graph, result = sum(graph$edges > 0)))
 }
 
+#' A Graph Function
+#'
+#' This functions counts the edges.
+#' @param graph the graph obj
+#' @return a list containing the graph and the number of edges
+countEdges.adjListGraph <- function(graph) {
+  total <- 0
+
+  vertices <- graph$edges
+
+  for (i in 1:length(vertices)) {
+    edges <- vertices[[i]]
+    for (j in 1:length(edges)) {
+      node <- edges[[j]]
+      if (node[2] != 0) {
+        total <- total + 1
+      }
+    }
+  }
+  return(list(graph = graph, result = total))
+}
 
 isConnected <- function(obj, ...) UseMethod("isConnected")
 isConnected.default <- function(obj, ...) print(paste("Method for class not found:", class(obj)))
@@ -457,24 +517,19 @@ isConnected.adjMatrixGraph <- function(graph) {
     }
   }
 
-  if (length(neighbors) < 1) {
-    r$result <- FALSE
-    return(r)
-  }
-
-  while(length(neighbors) > 0) {
+  while (length(neighbors) > 0) {
     current <- neighbors[1]
     visited <- c(visited, current)
     neighbors <- neighbors[-1]
 
-    row <- graph$edges[currentgrqp,]
+    row <- graph$edges[current,]
 
     for (i in 1:length(row)) {
 
       if (row[i] == current) next
 
       node <- graph$nodes[i]
-      if (row[i] != -1 && !(node %in% visited)) {
+      if (row[i] != -1 & !(node %in% visited)) {
         neighbors <- c(neighbors, node)
       }
     }
@@ -485,6 +540,44 @@ isConnected.adjMatrixGraph <- function(graph) {
 
   return(r)
 
+}
+
+#' A Graph Function
+#'
+#' This functions checks if the graph is connected.
+#' @param graph the graph obj
+#' @return a list containing the graph and whether the graph is connected
+isConnected.adjListGraph <- function(graph) {
+  r <- list(graph = graph, result = TRUE)
+
+  if (length(graph$nodes) <= 1) return(r)  # graph with 0 or 1 nodes
+
+  current <- graph$nodes[1]
+  visited <- c(current)
+  neighbors <- c()
+
+  # Get starting neighbors
+  edges <- graph$edges[[1]]
+  for (i in 2:length(edges)) {
+    if (edges[[i]][2] != 0) neighbors <- c(neighbors, edges[[i]][1])
+  }
+
+  while (length(neighbors) > 0) {
+    current <- neighbors[1]
+    visited <- c(visited, current)
+    neighbors <- neighbors[-1]
+
+    edges <- graph$edges[[current]]
+    for (i in 2:length(edges)) {
+      if (edges[[i]][2] != 0 & !(edges[[i]][1] %in% visited)) {
+        neighbors <- c(neighbors, edges[[i]][1])
+      }
+    }
+  }
+
+  if (length(visited) < length(graph$nodes)) r$result <- FALSE
+
+  return(r)
 }
 
 isFullyConnected <- function(obj, ...) UseMethod("isFullyConnected")
@@ -512,3 +605,12 @@ isFullyConnected.adjMatrixGraph <- function(graph) {
   return(r)
 }
 
+#' A Graph Function
+#'
+#' This functions checks if the graph is fully connected.
+#' @param graph the graph obj
+#' @return a list containing the graph and whether the graph is fully connected
+isFullyConnected.adjListGraph <- function(graph) {
+  max_edges <- length(graph$edges) * (length(graph$edges) - 1)
+  return(list(graph = graph, result = max_edges == countEdges(graph)$result))
+}
